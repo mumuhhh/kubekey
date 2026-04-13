@@ -30,7 +30,7 @@ import (
 	apigeneric "k8s.io/apiserver/pkg/registry/generic"
 	apistorage "k8s.io/apiserver/pkg/storage"
 	apinames "k8s.io/apiserver/pkg/storage/names"
-	"sigs.k8s.io/structured-merge-diff/v4/fieldpath"
+	"sigs.k8s.io/structured-merge-diff/v6/fieldpath"
 
 	_const "github.com/kubesphere/kubekey/v4/pkg/const"
 )

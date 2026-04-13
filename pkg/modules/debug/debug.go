@@ -23,12 +23,14 @@ import (
 	"io"
 	"reflect"
 	"strings"
+	"text/template"
 
 	"github.com/cockroachdb/errors"
 	kkprojectv1 "github.com/kubesphere/kubekey/api/project/v1"
 
 	"github.com/kubesphere/kubekey/v4/pkg/converter/tmpl"
 	"github.com/kubesphere/kubekey/v4/pkg/modules/internal"
+	"github.com/kubesphere/kubekey/v4/pkg/utils"
 	"github.com/kubesphere/kubekey/v4/pkg/variable"
 )
 
@@ -84,7 +86,7 @@ Return Values:
 */
 
 // ModuleDebug handles the "debug" module, printing debug information
-func ModuleDebug(_ context.Context, opts internal.ExecOptions) (string, string, error) {
+func ModuleDebug(ctx context.Context, opts internal.ExecOptions) (string, string, error) {
 	// get host variable
 	ha, err := opts.GetAllVariables()
 	if err != nil {
@@ -92,6 +94,7 @@ func ModuleDebug(_ context.Context, opts internal.ExecOptions) (string, string, 
 	}
 	args := variable.Extension2Variables(opts.Args)
 
+	tpl := utils.GetTmpl(ctx)
 	// Handle "var" field - for getting variable values
 	if v, ok := args["var"]; ok {
 		return handleVarField(v, ha, opts.LogOutput)
@@ -99,7 +102,7 @@ func ModuleDebug(_ context.Context, opts internal.ExecOptions) (string, string, 
 
 	// Handle "msg" field - for printing messages with template support
 	if v, ok := args["msg"]; ok {
-		return handleMsgField(v, ha, opts.LogOutput)
+		return handleMsgField(tpl, v, ha, opts.LogOutput)
 	}
 
 	return internal.StdoutFailed, internal.StderrUnsupportArgs, errors.New("either \"msg\" or \"var\" must be specified")
@@ -138,14 +141,14 @@ func handleVarField(v any, ha map[string]any, output io.Writer) (string, string,
 
 // handleMsgField handles the "msg" field for message debugging
 // Supports template syntax with filters like "a is {{ .var | default 'b' }}"
-func handleMsgField(v any, ha map[string]any, output io.Writer) (string, string, error) {
+func handleMsgField(tpl *template.Template, v any, ha map[string]any, output io.Writer) (string, string, error) {
 	rv := reflect.ValueOf(v)
 	switch rv.Kind() {
 	case reflect.String:
 		msg := rv.String()
 		// If it contains template syntax, parse it
 		if kkprojectv1.IsTmplSyntax(msg) {
-			parsed, err := tmpl.Parse(ha, msg)
+			parsed, err := tmpl.Parse(tpl, ha, msg)
 			if err != nil {
 				return internal.StdoutFailed, internal.StderrParseArgument, err
 			}
