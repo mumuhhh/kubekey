@@ -10,6 +10,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 
 	kkcorev1alpha1 "github.com/kubesphere/kubekey/api/core/v1alpha1"
+
+	"github.com/kubesphere/kubekey/v4/pkg/converter/tmpl"
+	"github.com/kubesphere/kubekey/v4/pkg/utils"
 )
 
 func TestTaskExecutor(t *testing.T) {
@@ -79,7 +82,7 @@ func TestTaskExecutor(t *testing.T) {
 	}
 	for _, tc := range testcases {
 		t.Run(tc.name, func(t *testing.T) {
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+			ctx, cancel := context.WithTimeout(context.WithValue(context.Background(), utils.TplKey, tmpl.NewTmplAddFuncs()), time.Second*5)
 			defer cancel()
 			o, err := newTestOption(tc.hosts)
 			if err != nil {

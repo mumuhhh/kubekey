@@ -232,7 +232,7 @@ verify-releaser: $(GORELEASER) ## Verify goreleaser
 
 .PHONY: kk
 kk: ## build kk binary
-	@CGO_ENABLED=0 GOARCH=$(GOARCH) GOOS=$(GOOS) go build -trimpath -tags "$(BUILDTAGS)" -ldflags "$(LDFLAGS)" -o $(OUTPUT_BIN_DIR)/kk cmd/kk/kubekey.go
+	@CGO_ENABLED=0 GOARCH=$(GOARCH) GOOS=$(GOOS) go build -trimpath -tags "$(BUILDTAGS)" -ldflags "-w -s $(LDFLAGS)" -o $(OUTPUT_BIN_DIR)/kk cmd/kk/kubekey.go
 
 .PHONY: kk-releaser 
 kk-releaser: $(GORELEASER) ## build releaser in dist. it will show in https://github.com/kubesphere/kubekey/releases

@@ -168,6 +168,9 @@ func (h *InventoryHandler) Patch(request *restful.Request, response *restful.Res
 		ObjectMeta: metav1.ObjectMeta{
 			GenerateName: "host-check-",
 			Namespace:    namespace,
+			Annotations: map[string]string{
+				kkcorev1.BuiltinsProjectAnnotation: "",
+			},
 		},
 		Spec: kkcorev1.PlaybookSpec{
 			InventoryRef: &corev1.ObjectReference{
@@ -175,7 +178,7 @@ func (h *InventoryHandler) Patch(request *restful.Request, response *restful.Res
 				Namespace: namespace,
 				Name:      inventoryName,
 			},
-			Playbook: "host_check.yaml",
+			Playbook: "playbooks/host_check.yaml",
 		},
 		Status: kkcorev1.PlaybookStatus{
 			Phase: kkcorev1.PlaybookPhasePending,

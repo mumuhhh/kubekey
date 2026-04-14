@@ -18,7 +18,7 @@ package app
 
 import (
 	"github.com/spf13/cobra"
-	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
+	"k8s.io/apiserver/pkg/server"
 
 	"github.com/kubesphere/kubekey/v4/cmd/kk/app/options"
 )
@@ -42,7 +42,7 @@ func NewRootCommand() *cobra.Command {
 		},
 		SilenceUsage: true,
 	}
-	cmd.SetContext(signals.SetupSignalHandler())
+	cmd.SetContext(server.SetupSignalContext())
 	// add common flag
 	flags := cmd.PersistentFlags()
 	options.AddProfilingFlags(flags)

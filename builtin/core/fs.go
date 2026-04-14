@@ -23,7 +23,7 @@ import (
 	"embed"
 )
 
-//go:embed playbooks roles
+//go:embed playbooks roles includes
 var BuiltinPlaybook embed.FS
 
 //go:embed defaults
