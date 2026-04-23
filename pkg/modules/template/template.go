@@ -18,7 +18,6 @@ package template
 
 import (
 	"context"
-	"fmt"
 	"io/fs"
 	"math"
 	"os"
@@ -28,7 +27,6 @@ import (
 	"github.com/cockroachdb/errors"
 	kkcorev1alpha1 "github.com/kubesphere/kubekey/api/core/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/util/rand"
 	"k8s.io/klog/v2"
 	"k8s.io/utils/ptr"
 
@@ -228,15 +226,8 @@ func handleRelativeDir(ctx context.Context, pj project.Project, relPath string, 
 			}
 			dest = filepath.Join(ta.dest, rel)
 		}
-		tmpDest := filepath.Join("/tmp", ".kk."+rand.String(10))
 
-		if err = conn.PutFile(ctx, result, tmpDest, mode); err != nil {
-			return err
-		}
-
-		_, _, err = conn.ExecuteCommand(ctx, fmt.Sprintf("mkdir -p %s\nmv %s %s", filepath.Dir(dest), tmpDest, dest))
-
-		return err
+		return connector.PutData(ctx, result, dest, mode, conn)
 	})
 }
 
@@ -255,15 +246,8 @@ func (ta templateArgs) readFile(ctx context.Context, data string, mode fs.FileMo
 	if ta.mode != nil {
 		mode = os.FileMode(*ta.mode)
 	}
-	tmpDest := filepath.Join("/tmp", ".kk."+rand.String(10))
 
-	if err = conn.PutFile(ctx, result, tmpDest, mode); err != nil {
-		return err
-	}
-
-	_, _, err = conn.ExecuteCommand(ctx, fmt.Sprintf("mkdir -p %s\nmv %s %s", filepath.Dir(dest), tmpDest, dest))
-
-	return err
+	return connector.PutData(ctx, result, dest, mode, conn)
 }
 
 // absDir when template.src is absolute dir, get all files by os, parse it, and copy to remote.
@@ -304,15 +288,7 @@ func (ta templateArgs) absDir(ctx context.Context, conn connector.Connector, var
 			dest = filepath.Join(ta.dest, rel)
 		}
 
-		tmpDest := filepath.Join("/tmp", ".kk."+rand.String(10))
-
-		if err = conn.PutFile(ctx, result, tmpDest, mode); err != nil {
-			return err
-		}
-
-		_, _, err = conn.ExecuteCommand(ctx, fmt.Sprintf("mkdir -p %s\nmv %s %s", filepath.Dir(dest), tmpDest, dest))
-
-		return err
+		return connector.PutData(ctx, result, dest, mode, conn)
 	}); err != nil {
 		return errors.Wrapf(err, "failed to walk dir %q", ta.src)
 	}
