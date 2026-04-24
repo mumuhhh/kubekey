@@ -106,11 +106,11 @@ authentication:
         agent:
           # -- SPIRE agent image
           image:
-            repository: "{{ .image_registry.ghcrio_registry }}/spiffe/spire-agent{{and (.cni.cilium_version | semverCompare ">=1.14.0") (.cni.cilium_version | semverCompare "<1.15.0" )}}:1.6.3@sha256:8eef9857bf223181ecef10d9bbcd2f7838f3689e9bd2445bede35066a732e823{{ end }}"
+            repository: "{{ .image_registry.ghcrio_registry }}/spiffe/spire-agent{{ if and (.cni.cilium_version | semverCompare ">=1.14.0") (.cni.cilium_version | semverCompare "<1.15.0" )}}:1.6.3@sha256:8eef9857bf223181ecef10d9bbcd2f7838f3689e9bd2445bede35066a732e823{{ end }}"
         server:
           # -- SPIRE server image
           image:
-            repository: "{{ .image_registry.ghcrio_registry }}/spiffe/spire-server{{and (.cni.cilium_version | semverCompare ">=1.14.0") (.cni.cilium_version | semverCompare "<1.15.0" )}}:1.6.3@sha256:f4bc49fb0bd1d817a6c46204cc7ce943c73fb0a5496a78e0e4dc20c9a816ad7f{{ end }}"
+            repository: "{{ .image_registry.ghcrio_registry }}/spiffe/spire-server{{if and (.cni.cilium_version | semverCompare ">=1.14.0") (.cni.cilium_version | semverCompare "<1.15.0" )}}:1.6.3@sha256:f4bc49fb0bd1d817a6c46204cc7ce943c73fb0a5496a78e0e4dc20c9a816ad7f{{ end }}"
 ipv4:
   enabled: {{ .cni.ipv4_support }}
 ipv6:
